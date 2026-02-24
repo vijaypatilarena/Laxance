@@ -11,7 +11,8 @@ import {
   User,
   LogOut,
   Menu,
-  X
+  X,
+  Landmark
 } from "lucide-react";
 import { usePathname } from "next/navigation";
 import { useState, useEffect } from "react";
@@ -47,6 +48,7 @@ export default function DashboardLayout({
     { name: "Transactions", href: "/dashboard/transactions", icon: PlusCircle },
     { name: "AI Analysis", href: "/dashboard/analysis", icon: BarChart3 },
     { name: "Financial Goals", href: "/dashboard/goals", icon: Target },
+    { name: "Bank Accounts", href: "/dashboard/bank", icon: Landmark },
     { name: "AI Chatbot", href: "/dashboard/chat", icon: MessageSquare },
     { name: "Profile", href: "/dashboard/profile", icon: User },
   ];

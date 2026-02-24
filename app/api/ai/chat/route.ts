@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { auth, clerkClient } from '@clerk/nextjs/server';
 import { supabase } from '@/lib/supabase';
 import { getAIChatResponse } from '@/lib/ai';
-import { convertValue } from '@/lib/currency';
+import { convertValue, fetchLatestRates } from '@/lib/currency';
 
 export async function POST(req: NextRequest) {
     try {
@@ -12,6 +12,9 @@ export async function POST(req: NextRequest) {
         const client = await clerkClient();
         const user = await client.users.getUser(userId);
         const currency = (user.publicMetadata as any)?.currency || "GBP (£)";
+
+        // Fetch live rates
+        await fetchLatestRates();
 
         const body = await req.json();
         const { message } = body;

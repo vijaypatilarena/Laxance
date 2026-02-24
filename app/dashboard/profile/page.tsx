@@ -5,6 +5,7 @@ import { motion } from "framer-motion";
 import { useSearchParams } from "next/navigation";
 import { useState } from "react";
 import { Crown, CheckCircle2, XCircle, Loader2 } from "lucide-react";
+import { SUPPORTED_CURRENCIES } from "@/lib/currency";
 
 export default function ProfilePage() {
   const { isLoaded, user } = useUser();
@@ -160,10 +161,9 @@ export default function ProfilePage() {
                 onChange={(e) => setCurrency(e.target.value)}
                 style={{ padding: '0.75rem', borderRadius: '8px', border: '1px solid #ddd' }}
               >
-                <option>GBP (£)</option>
-                <option>USD ($)</option>
-                <option>EUR (€)</option>
-                <option>INR (₹)</option>
+                {SUPPORTED_CURRENCIES.map(curr => (
+                  <option key={curr}>{curr}</option>
+                ))}
               </select>
             </div>
             <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>

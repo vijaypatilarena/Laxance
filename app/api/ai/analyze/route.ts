@@ -2,7 +2,7 @@ import { NextResponse } from 'next/server';
 import { auth, clerkClient } from '@clerk/nextjs/server';
 import { supabase } from '@/lib/supabase';
 import { getAIAnalysis } from '@/lib/ai';
-import { convertValue } from '@/lib/currency';
+import { convertValue, fetchLatestRates } from '@/lib/currency';
 
 export async function GET() {
     try {
@@ -13,6 +13,9 @@ export async function GET() {
         const user = await client.users.getUser(userId);
         const currency = (user.publicMetadata as any)?.currency || "GBP (£)";
         const frequency = (user.publicMetadata as any)?.frequency || "Daily";
+
+        // Fetch live rates
+        await fetchLatestRates();
 
         // 1. Fetch Transactions
         const { data: transactions } = await supabase

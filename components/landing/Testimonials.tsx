@@ -22,24 +22,40 @@ const testimonials = [
 
 export default function Testimonials() {
   return (
-    <section className="section" style={{ background: '#fff' }}>
+    <section className="section" style={{ background: '#fafafa', padding: '10rem 0' }}>
       <div className="container">
-        <h2 style={{ fontSize: '3rem', textAlign: 'center', marginBottom: '4rem' }}>Trusted by Wealth Builders.</h2>
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '2rem' }}>
+        <div style={{ textAlign: 'center', marginBottom: '6rem' }}>
+          <h2 style={{ fontSize: 'max(2.5rem, 3.5vw)', fontWeight: 800, letterSpacing: '-0.04em' }}>VALIDATION.</h2>
+          <p style={{ color: '#666', marginTop: '1rem' }}>Success stories from our global network of wealth builders.</p>
+        </div>
+
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: '2.5rem' }}>
           {testimonials.map((t, i) => (
             <motion.div
               key={i}
-              initial={{ opacity: 0, scale: 0.95 }}
+              initial={{ opacity: 0, scale: 0.98 }}
               whileInView={{ opacity: 1, scale: 1 }}
-              transition={{ duration: 0.5, delay: i * 0.1 }}
+              transition={{ duration: 0.6, delay: i * 0.1 }}
               viewport={{ once: true }}
-              style={{ padding: '3rem', backgroundColor: '#f9f9f9', borderRadius: '12px', border: '1px solid #eee' }}
+              style={{ 
+                padding: '3.5rem', 
+                backgroundColor: '#fff', 
+                borderRadius: '32px', 
+                border: '1px solid #eee',
+                boxShadow: '0 20px 40px rgba(0,0,0,0.02)',
+                display: 'flex',
+                flexDirection: 'column'
+              }}
             >
-              <p style={{ fontSize: '1.25rem', fontStyle: 'italic', marginBottom: '2rem', color: '#333' }}>&quot;{t.quote}&quot;</p>
+              <div style={{ display: 'flex', gap: '0.4rem', marginBottom: '2rem' }}>
+                {[1, 2, 3, 4, 5].map(star => <div key={star} style={{ width: '6px', height: '6px', background: '#000', borderRadius: '50%' }} />)}
+              </div>
+              
+              <p style={{ fontSize: '1.2rem', marginBottom: '3rem', color: '#000', lineHeight: 1.6, flex: 1, fontWeight: 500 }}>&quot;{t.quote}&quot;</p>
 
               <div>
-                <strong style={{ display: 'block', fontSize: '1.1rem' }}>{t.name}</strong>
-                <span style={{ color: '#777', fontSize: '0.9rem' }}>{t.role}</span>
+                <strong style={{ display: 'block', fontSize: '1.1rem', fontWeight: 700 }}>{t.name}</strong>
+                <span style={{ color: '#888', fontSize: '0.85rem', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.1em' }}>{t.role}</span>
               </div>
             </motion.div>
           ))}

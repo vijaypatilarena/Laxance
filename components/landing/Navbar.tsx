@@ -22,39 +22,47 @@ export default function Navbar() {
       top: 0,
       width: '100%',
       zIndex: 1000,
-      padding: '1rem 0',
-      background: 'rgba(255, 255, 255, 0.8)',
-      backdropFilter: 'blur(10px)',
-      borderBottom: '1px solid var(--border)'
+      padding: '1.5rem 0',
+      background: 'rgba(255, 255, 255, 0.7)',
+      backdropFilter: 'blur(20px)',
+      borderBottom: '1px solid rgba(0,0,0,0.05)'
     }}>
       <div className="container" style={{
         display: 'flex',
         justifyContent: 'space-between',
         alignItems: 'center'
       }}>
-        <Link href="/" style={{ fontSize: '1.5rem', fontWeight: 900, letterSpacing: '-0.05em' }}>
+        <Link href="/" style={{ fontSize: '1.2rem', fontWeight: 900, letterSpacing: '-0.05em', color: '#000' }}>
           LAXANCE
         </Link>
         
         {/* Desktop Links */}
-        <div style={{ display: 'flex', gap: '2rem', alignItems: 'center' }} className="desktop-nav">
+        <div style={{ display: 'flex', gap: '2.5rem', alignItems: 'center' }} className="desktop-nav">
           {navLinks.map(link => (
-            <Link key={link.name} href={link.href} style={{ fontWeight: 500 }}>{link.name}</Link>
+            <Link 
+              key={link.name} 
+              href={link.href} 
+              style={{ fontWeight: 600, fontSize: '0.9rem', color: '#666', transition: 'color 0.2s ease' }}
+              onMouseEnter={(e) => (e.currentTarget.style.color = '#000')}
+              onMouseLeave={(e) => (e.currentTarget.style.color = '#666')}
+            >
+              {link.name}
+            </Link>
           ))}
           
-          <div style={{ display: 'flex', gap: '1rem', marginLeft: '1rem' }}>
+          <div style={{ display: 'flex', gap: '1rem', alignItems: 'center', marginLeft: '2rem' }}>
             {isSignedIn ? (
               <>
-                <Link href="/dashboard" className="btn btn-primary" style={{ padding: '0.5rem 1rem' }}>Dashboard</Link>
+                <Link href="/dashboard" className="btn btn-primary" style={{ padding: '0.7rem 1.4rem', borderRadius: '100px', fontSize: '0.9rem' }}>Dashboard</Link>
                 <UserButton afterSignOutUrl="/" />
               </>
             ) : (
               <>
                 <SignInButton mode="modal">
-                  <button className="btn btn-secondary" style={{ padding: '0.5rem 1rem' }}>Login</button>
+                  <button style={{ fontWeight: 600, fontSize: '0.9rem', color: '#000', cursor: 'pointer' }}>Login</button>
                 </SignInButton>
                 <SignUpButton mode="modal">
-                  <button className="btn btn-primary" style={{ padding: '0.5rem 1rem' }}>Sign Up</button>
+                  <button className="btn btn-primary" style={{ padding: '0.7rem 1.4rem', borderRadius: '100px', fontSize: '0.9rem' }}>Get Started</button>
                 </SignUpButton>
               </>
             )}

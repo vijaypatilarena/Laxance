@@ -27,34 +27,46 @@ export default function FAQ() {
   const [open, setOpen] = useState<number | null>(null);
 
   return (
-    <section id="faq" className="section" style={{ background: '#fff' }}>
+    <section id="faq" className="section" style={{ background: '#fff', padding: '10rem 0' }}>
       <div className="container" style={{ maxWidth: '800px' }}>
-        <h2 style={{ fontSize: '3rem', textAlign: 'center', marginBottom: '4rem' }}>Common Questions</h2>
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+        <div style={{ textAlign: 'center', marginBottom: '4rem' }}>
+          <h2 style={{ fontSize: 'max(2.5rem, 3.5vw)', fontWeight: 800, letterSpacing: '-0.04em' }}>INTELLECTUAL BASE.</h2>
+          <p style={{ color: '#666', marginTop: '1rem' }}>Everything you need to know about our ecosystem.</p>
+        </div>
+        
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
           {faqs.map((faq, i) => (
-            <div key={i} style={{ borderBottom: '1px solid #eee' }}>
+            <div key={i} style={{ 
+              border: '1px solid rgba(0,0,0,0.05)', 
+              borderRadius: '20px', 
+              overflow: 'hidden',
+              marginBottom: '0.5rem',
+              transition: 'all 0.3s ease'
+            }}>
               <button 
                 onClick={() => setOpen(open === i ? null : i)}
                 style={{ 
                   width: '100%', 
-                  padding: '1.5rem 0', 
+                  padding: '1.8rem 2rem', 
                   display: 'flex', 
                   justifyContent: 'space-between', 
                   alignItems: 'center',
-                  fontSize: '1.25rem',
+                  fontSize: '1.1rem',
                   fontWeight: 600,
-                  textAlign: 'left'
+                  textAlign: 'left',
+                  background: open === i ? 'rgba(0,0,0,0.02)' : 'transparent',
+                  color: '#000'
                 }}
               >
                 {faq.q}
-                {open === i ? <ChevronUp /> : <ChevronDown />}
+                {open === i ? <ChevronUp size={20} /> : <ChevronDown size={20} />}
               </button>
               {open === i && (
                 <motion.div
                   initial={{ height: 0, opacity: 0 }}
                   animate={{ height: 'auto', opacity: 1 }}
                   transition={{ duration: 0.3 }}
-                  style={{ paddingBottom: '1.5rem', color: '#616161', lineHeight: 1.6 }}
+                  style={{ padding: '0 2rem 2rem 2rem', color: '#666', lineHeight: 1.7, fontSize: '0.95rem' }}
                 >
                   {faq.a}
                 </motion.div>

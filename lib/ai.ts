@@ -1,4 +1,5 @@
 import { GoogleGenerativeAI } from "@google/generative-ai";
+import { CURRENCY_SYMBOLS } from "./currency";
 
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY || "");
 const modelName = "gemini-1.5-flash-latest";
@@ -20,7 +21,7 @@ export async function getAIAnalysis(data: FinancialData) {
     const model = genAI.getGenerativeModel({ model: modelName });
 
     const currency = data.currency || "GBP (£)";
-    const symbol = currency.includes("INR") ? "₹" : currency.includes("USD") ? "$" : currency.includes("EUR") ? "€" : "£";
+    const symbol = CURRENCY_SYMBOLS[currency] || "£";
 
     const prompt = `
     You are a professional financial advisor for a high-end finance app called Laxance.
@@ -75,7 +76,7 @@ function getHeuristicAnalysis(data: FinancialData) {
         }));
 
     const currency = data.currency || "GBP (£)";
-    const symbol = currency.includes("INR") ? "₹" : currency.includes("USD") ? "$" : currency.includes("EUR") ? "€" : "£";
+    const symbol = CURRENCY_SYMBOLS[currency] || "£";
 
     return {
         savingsRatio: ratio.toFixed(1),
@@ -106,7 +107,7 @@ export async function getAIChatResponse(message: string, data: FinancialData) {
     const model = genAI.getGenerativeModel({ model: modelName });
 
     const currency = data.currency || "GBP (£)";
-    const symbol = currency.includes("INR") ? "₹" : currency.includes("USD") ? "$" : currency.includes("EUR") ? "€" : "£";
+    const symbol = CURRENCY_SYMBOLS[currency] || "£";
 
     const chat = model.startChat({
         history: [

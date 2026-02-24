@@ -1,8 +1,15 @@
 "use client";
 
-import React, { createContext, useContext, ReactNode } from 'react';
+import React, { createContext, useContext, ReactNode, useState, useEffect } from 'react';
 import { useUser } from '@clerk/nextjs';
-import { CURRENCY_SYMBOLS, convertValue, convertToBase, formatCurrency as formatCurrencyLib } from '@/lib/currency';
+import { 
+  CURRENCY_SYMBOLS, 
+  CURRENCY_RATES as INITIAL_RATES,
+  convertValue, 
+  convertToBase, 
+  fetchLatestRates,
+  formatCurrency as formatCurrencyLib 
+} from '@/lib/currency';
 
 interface CurrencyContextType {
   currency: string;
@@ -11,21 +18,39 @@ interface CurrencyContextType {
   convertToGBP: (value: number) => number;
   format: (value: number) => string;     // converts and formats
   formatPlain: (value: number) => string; // only formats
+  loading: boolean;
 }
 
 const CurrencyContext = createContext<CurrencyContextType | undefined>(undefined);
 
 export function CurrencyProvider({ children }: { children: ReactNode }) {
   const { user } = useUser();
+  const [rates, setRates] = useState<Record<string, number>>(INITIAL_RATES);
+  const [loading, setLoading] = useState(true);
+
   const userCurrency = (user?.publicMetadata as any)?.currency || "GBP (£)";
   const baseCurrency = "GBP (£)"; // Assuming database values are in GBP
 
+  useEffect(() => {
+    async function updateRates() {
+      try {
+        const latestRates = await fetchLatestRates();
+        setRates(latestRates);
+      } catch (err) {
+        console.error("Currency Provider error:", err);
+      } finally {
+        setLoading(false);
+      }
+    }
+    updateRates();
+  }, []);
+
   const convert = (value: number) => {
-    return convertValue(value, baseCurrency, userCurrency);
+    return convertValue(value, baseCurrency, userCurrency, rates);
   };
 
   const convertToGBP = (value: number) => {
-    return convertToBase(value, userCurrency);
+    return convertToBase(value, userCurrency, rates);
   };
 
   const format = (value: number) => {
@@ -44,7 +69,8 @@ export function CurrencyProvider({ children }: { children: ReactNode }) {
       convert,
       convertToGBP,
       format,
-      formatPlain
+      formatPlain,
+      loading
     }}>
       {children}
     </CurrencyContext.Provider>

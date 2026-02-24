@@ -1,12 +1,17 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { auth } from '@clerk/nextjs/server';
+import { auth, clerkClient } from '@clerk/nextjs/server';
 import { supabase } from '@/lib/supabase';
 import { getAIChatResponse } from '@/lib/ai';
+import { convertValue } from '@/lib/currency';
 
 export async function POST(req: NextRequest) {
     try {
         const { userId } = await auth();
         if (!userId) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+
+        const client = await clerkClient();
+        const user = await client.users.getUser(userId);
+        const currency = (user.publicMetadata as any)?.currency || "GBP (£)";
 
         const body = await req.json();
         const { message } = body;
@@ -35,11 +40,27 @@ export async function POST(req: NextRequest) {
             totalExpenses = Number(goals[0].monthly_expenses);
         }
 
+        // Convert to User Currency
+        const convertedIncome = convertValue(totalIncome, "GBP (£)", currency);
+        const convertedExpenses = convertValue(totalExpenses, "GBP (£)", currency);
+        const convertedTransactions = (transactions || []).map(tx => ({
+            ...tx,
+            amount: convertValue(Number(tx.amount), "GBP (£)", currency)
+        }));
+        const convertedGoals = (goals || []).map(g => ({
+            ...g,
+            amount: convertValue(Number(g.amount), "GBP (£)", currency),
+            current_savings: convertValue(Number(g.current_savings), "GBP (£)", currency),
+            monthly_income: convertValue(Number(g.monthly_income), "GBP (£)", currency),
+            monthly_expenses: convertValue(Number(g.monthly_expenses), "GBP (£)", currency)
+        }));
+
         const response = await getAIChatResponse(message, {
-            income: totalIncome,
-            expenses: totalExpenses,
-            transactions: transactions || [],
-            goals: goals || []
+            income: convertedIncome,
+            expenses: convertedExpenses,
+            transactions: convertedTransactions,
+            goals: convertedGoals,
+            currency: currency
         });
 
         return NextResponse.json({ response });

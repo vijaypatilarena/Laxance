@@ -8,6 +8,8 @@ export interface FinancialData {
     expenses: number;
     transactions: any[];
     goals: any[];
+    currency?: string;
+    frequency?: string;
 }
 
 export async function getAIAnalysis(data: FinancialData) {
@@ -17,13 +19,18 @@ export async function getAIAnalysis(data: FinancialData) {
 
     const model = genAI.getGenerativeModel({ model: modelName });
 
+    const currency = data.currency || "GBP (£)";
+    const symbol = currency.includes("INR") ? "₹" : currency.includes("USD") ? "$" : currency.includes("EUR") ? "€" : "£";
+
     const prompt = `
     You are a professional financial advisor for a high-end finance app called Laxance.
-    Analyze the following user financial data and provide structured insights:
+    Analyze the following user financial data and provide structured insights. 
+    The user prefers a **${data.frequency || 'Daily'}** analysis cadence.
+    All monetary values are in ${currency} (Symbol: ${symbol}).
     
     Data:
-    - Total Monthly Income: £${data.income}
-    - Total Monthly Expenses: £${data.expenses}
+    - Total Monthly Income: ${symbol}${data.income}
+    - Total Monthly Expenses: ${symbol}${data.expenses}
     - Recent Transactions: ${JSON.stringify(data.transactions.slice(0, 10))}
     - Current Goals: ${JSON.stringify(data.goals)}
 
@@ -67,6 +74,9 @@ function getHeuristicAnalysis(data: FinancialData) {
             color: ['#000', '#333', '#666', '#999'][i]
         }));
 
+    const currency = data.currency || "GBP (£)";
+    const symbol = currency.includes("INR") ? "₹" : currency.includes("USD") ? "$" : currency.includes("EUR") ? "€" : "£";
+
     return {
         savingsRatio: ratio.toFixed(1),
         topCategories: sortedCats.length > 0 ? sortedCats : [{ name: 'N/A', value: 0, color: '#000' }],
@@ -74,13 +84,13 @@ function getHeuristicAnalysis(data: FinancialData) {
             {
                 title: "Savings Velocity",
                 description: ratio > 20
-                    ? `Impressive! You are saving ${ratio.toFixed(1)}% of your income. Consider moving £${(savings * 0.5).toFixed(0)} to a high-yield account.`
+                    ? `Impressive! You are saving ${ratio.toFixed(1)}% of your income. Consider moving ${symbol}${(savings * 0.5).toFixed(0)} to a high-yield account.`
                     : `Your savings rate is ${ratio.toFixed(1)}%. AI recommends aiming for 20% by cutting discretionary ${sortedCats[0]?.name || 'spending'}.`,
                 type: ratio > 20 ? 'positive' : 'warning'
             },
             {
                 title: "Expense Anomaly",
-                description: `Your top expense is ${sortedCats[0]?.name || 'Unknown'} at £${sortedCats[0]?.value || 0}. This is ${((sortedCats[0]?.value || 0) / data.expenses * 100).toFixed(0)}% of your total spend.`,
+                description: `Your top expense is ${sortedCats[0]?.name || 'Unknown'} at ${symbol}${sortedCats[0]?.value || 0}. This is ${((sortedCats[0]?.value || 0) / data.expenses * 100).toFixed(0)}% of your total spend.`,
                 type: 'warning'
             }
         ],
@@ -95,11 +105,14 @@ export async function getAIChatResponse(message: string, data: FinancialData) {
 
     const model = genAI.getGenerativeModel({ model: modelName });
 
+    const currency = data.currency || "GBP (£)";
+    const symbol = currency.includes("INR") ? "₹" : currency.includes("USD") ? "$" : currency.includes("EUR") ? "€" : "£";
+
     const chat = model.startChat({
         history: [
             {
                 role: "user",
-                parts: [{ text: `You are the Laxance Financial AI. You have access to the user's data: Income £${data.income}, Expenses £${data.expenses}, Goals: ${JSON.stringify(data.goals)}. Stay helpful, professional, and concise.` }],
+                parts: [{ text: `You are the Laxance Financial AI. You have access to the user's data: Income ${symbol}${data.income}, Expenses ${symbol}${data.expenses}, Goals: ${JSON.stringify(data.goals)}. Stay helpful, professional, and concise. All values are in ${currency}.` }],
             },
             {
                 role: "model",

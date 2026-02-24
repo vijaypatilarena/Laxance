@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { Plus, ArrowUpRight, ArrowDownLeft, Calendar, Tag, Loader2, Trash2 } from "lucide-react";
+import { useCurrency } from "@/components/CurrencyContext";
 
 interface Transaction {
   id: string;
@@ -13,6 +14,7 @@ interface Transaction {
 }
 
 export default function TransactionsPage() {
+  const { symbol, format, convertToGBP } = useCurrency();
   const [type, setType] = useState<'income' | 'expense'>('expense');
   const [transactions, setTransactions] = useState<Transaction[]>([]);
   const [loading, setLoading] = useState(true);
@@ -62,7 +64,7 @@ export default function TransactionsPage() {
         body: JSON.stringify({
           date: formData.date,
           category: formData.category,
-          amount: formData.amount,
+          amount: convertToGBP(Number(formData.amount)),
           type
         })
       });
@@ -128,7 +130,7 @@ export default function TransactionsPage() {
 
           <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
             <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
-              <label style={{ fontSize: '0.85rem', fontWeight: 600, color: '#666' }}>Amount (£)</label>
+              <label style={{ fontSize: '0.85rem', fontWeight: 600, color: '#666' }}>Amount ({symbol})</label>
               <input 
                 type="number" 
                 placeholder="0.00"
@@ -201,7 +203,7 @@ export default function TransactionsPage() {
                       color: tx.type === 'income' ? '#16a34a' : '#000',
                       textAlign: 'right'
                     }}>
-                      {tx.type === 'income' ? '+' : '-'}£{tx.amount.toLocaleString(undefined, { minimumFractionDigits: 2 })}
+                      {tx.type === 'income' ? '+' : '-'}{format(tx.amount)}
                     </div>
                     <button 
                       onClick={() => handleDelete(tx.id)}

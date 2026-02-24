@@ -15,6 +15,7 @@ import {
 } from "lucide-react";
 import { usePathname } from "next/navigation";
 import { useState, useEffect } from "react";
+import { CurrencyProvider } from "@/components/CurrencyContext";
 import "./dashboard.css";
 
 export default function DashboardLayout({
@@ -112,7 +113,9 @@ export default function DashboardLayout({
 
       {/* Main Content */}
       <main className="main-content">
-        {children}
+        <CurrencyProvider>
+          {children}
+        </CurrencyProvider>
       </main>
     </div>
   );

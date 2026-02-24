@@ -2,9 +2,11 @@
 
 import { useState, useEffect } from "react";
 import { Brain, Zap, ShieldAlert, Loader2 } from "lucide-react";
+import { useCurrency } from "@/components/CurrencyContext";
 import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip } from 'recharts';
 
 export default function AnalysisPage() {
+  const { symbol, formatPlain } = useCurrency();
   const [analysis, setAnalysis] = useState<any>(null);
   const [loading, setLoading] = useState(true);
 
@@ -66,7 +68,7 @@ export default function AnalysisPage() {
             {analysis.topCategories.map((d: any, i: number) => (
               <div key={i} style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
                 <div style={{ width: '12px', height: '12px', background: d.color, borderRadius: '2px' }} />
-                <span style={{ fontSize: '0.85rem', color: '#444' }}>{d.name}: £{d.value.toLocaleString()}</span>
+                <span style={{ fontSize: '0.85rem', color: '#444' }}>{d.name}: {formatPlain(d.value)}</span>
               </div>
             ))}
           </div>

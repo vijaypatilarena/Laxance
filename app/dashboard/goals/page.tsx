@@ -3,8 +3,10 @@
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Car, Calculator, ArrowRight, CheckCircle2, Trash2 } from "lucide-react";
+import { useCurrency } from "@/components/CurrencyContext";
 
 export default function GoalsPage() {
+  const { symbol, format, convert, convertToGBP } = useCurrency();
   const [goals, setGoals] = useState<any[]>([]);
   const [currentGoal, setCurrentGoal] = useState<any>(null);
   const [step, setStep] = useState(1);
@@ -44,10 +46,10 @@ export default function GoalsPage() {
       gap,
       isFeasible: gap <= 0,
       suggestions: [
-        gap > 0 ? `Reduce discretionary spending by £${(gap * 0.6).toFixed(0)} monthly.` : "Great! You are on track to exceed your goal.",
-        gap > 0 ? `Explore a side hustle or freelance gig to cover the remaining £${(gap * 0.4).toFixed(0)}.` : "Consider investing your surplus in a high-yield savings account.",
+        gap > 0 ? `Reduce discretionary spending by ${format(gap * 0.6)} monthly.` : "Great! You are on track to exceed your goal.",
+        gap > 0 ? `Explore a side hustle or freelance gig to cover the remaining ${format(gap * 0.4)}.` : "Consider investing your surplus in a high-yield savings account.",
         "Diversify 20% of your savings into an index fund for potential 8% annual growth.",
-        "Negotiate your current utility bills to save an extra £50/month."
+        `Negotiate your current utility bills to save an extra ${format(50)}/month.`
       ]
     });
   };
@@ -123,11 +125,11 @@ export default function GoalsPage() {
         body: JSON.stringify({
           id: formData.id,
           title: formData.title,
-          amount: formData.amount,
+          amount: convertToGBP(formData.amount),
           timeline: formData.timeline,
-          current_savings: formData.currentSavings,
-          monthly_income: formData.monthlyIncome,
-          monthly_expenses: formData.monthlyExpenses,
+          current_savings: convertToGBP(formData.currentSavings),
+          monthly_income: convertToGBP(formData.monthlyIncome),
+          monthly_expenses: convertToGBP(formData.monthlyExpenses),
           risk_tolerance: formData.riskTolerance
         })
       });
@@ -198,7 +200,7 @@ export default function GoalsPage() {
                 }}
               >
                 <div style={{ fontWeight: 600, marginBottom: '0.25rem' }}>{g.title}</div>
-                <div style={{ fontSize: '0.85rem', color: '#666' }}>Target: £{Number(g.amount).toLocaleString()}</div>
+                <div style={{ fontSize: '0.85rem', color: '#666' }}>Target: {format(Number(g.amount))}</div>
                 <button 
                   onClick={(e) => handleDelete(g.id, e)}
                   style={{ position: 'absolute', top: '1.25rem', right: '1.25rem', border: 'none', background: 'transparent', color: '#ccc', cursor: 'pointer' }}
@@ -238,7 +240,7 @@ export default function GoalsPage() {
                           <input type="text" value={formData.title} onChange={(e) => setFormData({...formData, title: e.target.value})} style={{ padding: '0.75rem', borderRadius: '8px', border: '1px solid #ddd' }} />
                         </div>
                         <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
-                          <label style={{ fontSize: '0.9rem', fontWeight: 600 }}>Target Amount (£)</label>
+                          <label style={{ fontSize: '0.9rem', fontWeight: 600 }}>Target Amount ({symbol})</label>
                           <input type="number" value={formData.amount} onChange={(e) => setFormData({...formData, amount: Number(e.target.value)})} style={{ padding: '0.75rem', borderRadius: '8px', border: '1px solid #ddd' }} />
                         </div>
                         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
@@ -247,7 +249,7 @@ export default function GoalsPage() {
                             <input type="number" value={formData.timeline} onChange={(e) => setFormData({...formData, timeline: Number(e.target.value)})} style={{ padding: '0.75rem', borderRadius: '8px', border: '1px solid #ddd' }} />
                           </div>
                           <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
-                            <label style={{ fontSize: '0.9rem', fontWeight: 600 }}>Savings (£)</label>
+                            <label style={{ fontSize: '0.9rem', fontWeight: 600 }}>Savings ({symbol})</label>
                             <input type="number" value={formData.currentSavings} onChange={(e) => setFormData({...formData, currentSavings: Number(e.target.value)})} style={{ padding: '0.75rem', borderRadius: '8px', border: '1px solid #ddd' }} />
                           </div>
                         </div>
@@ -261,11 +263,11 @@ export default function GoalsPage() {
                       <h2 style={{ fontSize: '1.25rem', marginBottom: '2.5rem' }}>AI Needs Context</h2>
                       <div style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem', marginBottom: '2.5rem' }}>
                         <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
-                          <label style={{ fontSize: '0.9rem', fontWeight: 600 }}>Monthly Income (£)</label>
+                          <label style={{ fontSize: '0.9rem', fontWeight: 600 }}>Monthly Income ({symbol})</label>
                           <input type="number" value={formData.monthlyIncome} onChange={(e) => setFormData({...formData, monthlyIncome: Number(e.target.value)})} style={{ padding: '0.75rem', borderRadius: '8px', border: '1px solid #ddd' }} />
                         </div>
                         <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
-                          <label style={{ fontSize: '0.9rem', fontWeight: 600 }}>Monthly Expenses (£)</label>
+                          <label style={{ fontSize: '0.9rem', fontWeight: 600 }}>Monthly Expenses ({symbol})</label>
                           <input type="number" value={formData.monthlyExpenses} onChange={(e) => setFormData({...formData, monthlyExpenses: Number(e.target.value)})} style={{ padding: '0.75rem', borderRadius: '8px', border: '1px solid #ddd' }} />
                         </div>
                         <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
@@ -306,11 +308,11 @@ export default function GoalsPage() {
                     <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1.5rem', marginBottom: '2.5rem' }}>
                       <div style={{ padding: '1.25rem', background: '#f9f9f9', borderRadius: '12px' }}>
                         <div style={{ color: '#666', fontSize: '0.75rem', marginBottom: '0.25rem' }}>MONTHLY TARGET</div>
-                        <div style={{ fontSize: '1.5rem', fontWeight: 800 }}>£{roadmap.monthlySavingsNeeded.toLocaleString(undefined, { maximumFractionDigits: 0 })}</div>
+                        <div style={{ fontSize: '1.5rem', fontWeight: 800 }}>{format(roadmap.monthlySavingsNeeded)}</div>
                       </div>
                       <div style={{ padding: '1.25rem', background: '#f9f9f9', borderRadius: '12px' }}>
                         <div style={{ color: '#666', fontSize: '0.75rem', marginBottom: '0.25rem' }}>CURRENT SURPLUS</div>
-                        <div style={{ fontSize: '1.5rem', fontWeight: 800 }}>£{roadmap.currentMonthlySurplus.toLocaleString(undefined, { maximumFractionDigits: 0 })}</div>
+                        <div style={{ fontSize: '1.5rem', fontWeight: 800 }}>{format(roadmap.currentMonthlySurplus)}</div>
                       </div>
                     </div>
 

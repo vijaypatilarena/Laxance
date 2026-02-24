@@ -18,27 +18,15 @@ import {
   Tooltip, 
   ResponsiveContainer
 } from 'recharts';
+import { useCurrency } from "@/components/CurrencyContext";
+import { convertValue } from "@/lib/currency";
 
 export default function DashboardOverview() {
   const { user } = useUser();
+  const { format, convert, formatPlain } = useCurrency();
 
-  const [stats, setStats] = useState([
-    { label: "Current Balance", value: "£0.00", icon: Wallet, color: "#000" },
-    { label: "Total Income", value: "£0.00", icon: TrendingUp, color: "#10b981" },
-    { label: "Total Expenses", value: "£0.00", icon: TrendingDown, color: "#ef4444" },
-    { label: "Savings Rate", value: "0%", icon: PieChartIcon, color: "#3b82f6" },
-  ]);
-
-  const [chartData, setChartData] = useState([
-    { name: 'Mon', income: 0, expense: 0 },
-    { name: 'Tue', income: 0, expense: 0 },
-    { name: 'Wed', income: 0, expense: 0 },
-    { name: 'Thu', income: 0, expense: 0 },
-    { name: 'Fri', income: 0, expense: 0 },
-    { name: 'Sat', income: 0, expense: 0 },
-    { name: 'Sun', income: 0, expense: 0 },
-  ]);
-
+  const [rawStats, setRawStats] = useState<any>(null);
+  const [rawChartData, setRawChartData] = useState<any[]>([]);
   const [analysis, setAnalysis] = useState<any>(null);
   const [loadingAnalysis, setLoadingAnalysis] = useState(true);
 
@@ -48,13 +36,8 @@ export default function DashboardOverview() {
       .then(res => res.json())
       .then(data => {
         if (data && !data.error) {
-          setStats([
-            { label: "Current Balance", value: `£${Number(data.balance).toLocaleString(undefined, { minimumFractionDigits: 2 })}`, icon: Wallet, color: "#000" },
-            { label: "Total Income", value: `£${Number(data.totalIncome).toLocaleString(undefined, { minimumFractionDigits: 2 })}`, icon: TrendingUp, color: "#10b981" },
-            { label: "Total Expenses", value: `£${Number(data.totalExpenses).toLocaleString(undefined, { minimumFractionDigits: 2 })}`, icon: TrendingDown, color: "#ef4444" },
-            { label: "Savings Rate", value: `${data.savingsRate}%`, icon: PieChartIcon, color: "#3b82f6" },
-          ]);
-          if (data.weeklyData) setChartData(data.weeklyData);
+          setRawStats(data);
+          if (data.weeklyData) setRawChartData(data.weeklyData);
         }
       })
       .catch(console.error);
@@ -82,7 +65,12 @@ export default function DashboardOverview() {
         gap: '1rem',
         marginBottom: '2rem'
       }}>
-        {stats.map((stat, i) => (
+        {[
+          { label: "Current Balance", value: rawStats ? format(Number(rawStats.balance)) : "...", icon: Wallet, color: "#000" },
+          { label: "Total Income", value: rawStats ? format(Number(rawStats.totalIncome)) : "...", icon: TrendingUp, color: "#10b981" },
+          { label: "Total Expenses", value: rawStats ? format(Number(rawStats.totalExpenses)) : "...", icon: TrendingDown, color: "#ef4444" },
+          { label: "Savings Rate", value: rawStats ? `${rawStats.savingsRate}%` : "...", icon: PieChartIcon, color: "#3b82f6" },
+        ].map((stat, i) => (
           <motion.div
             key={i}
             initial={{ opacity: 0, y: 20 }}
@@ -117,12 +105,17 @@ export default function DashboardOverview() {
           <h3 style={{ marginBottom: '1.5rem' }}>Income vs Expenses</h3>
           <div style={{ height: '300px' }}>
             <ResponsiveContainer width="100%" height="100%">
-              <BarChart data={chartData}>
+              <BarChart data={rawChartData.map(d => ({
+                ...d,
+                income: convert(d.income),
+                expense: convert(d.expense)
+              }))}>
                 <CartesianGrid strokeDasharray="3 3" vertical={false} />
                 <XAxis dataKey="name" />
                 <YAxis />
                 <Tooltip 
                   contentStyle={{ borderRadius: '8px', border: '1px solid #eee' }}
+                  formatter={(value: any) => [formatPlain(Number(value) || 0), ""]}
                 />
                 <Bar dataKey="income" fill="#000" radius={[4, 4, 0, 0]} />
                 <Bar dataKey="expense" fill="#ccc" radius={[4, 4, 0, 0]} />

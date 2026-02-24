@@ -163,6 +163,7 @@ export default function ProfilePage() {
                 <option>GBP (£)</option>
                 <option>USD ($)</option>
                 <option>EUR (€)</option>
+                <option>INR (₹)</option>
               </select>
             </div>
             <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>

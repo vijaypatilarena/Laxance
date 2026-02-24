@@ -17,7 +17,7 @@ export async function POST(req: NextRequest) {
         await fetchLatestRates();
 
         const body = await req.json();
-        const { message } = body;
+        const { message, history } = body;
 
         // Fetch context for AI
         const { data: transactions } = await supabase
@@ -64,7 +64,7 @@ export async function POST(req: NextRequest) {
             transactions: convertedTransactions,
             goals: convertedGoals,
             currency: currency
-        });
+        }, history);
 
         return NextResponse.json({ response });
     } catch (err: any) {

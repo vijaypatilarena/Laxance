@@ -2,7 +2,7 @@ import { GoogleGenerativeAI } from "@google/generative-ai";
 import { CURRENCY_SYMBOLS } from "./currency";
 
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY || "");
-const modelName = "gemini-1.5-flash-latest";
+const modelName = "gemini-2.0-flash-lite";
 
 export interface FinancialData {
     income: number;
@@ -50,8 +50,8 @@ export async function getAIAnalysis(data: FinancialData) {
         // Clean JSON if needed
         const jsonStr = text.replace(/```json|```/g, "").trim();
         return JSON.parse(jsonStr);
-    } catch (error) {
-        console.error("AI Analysis Error:", error);
+    } catch (error: any) {
+        console.error("AI Analysis Error:", error?.message || error);
         return getHeuristicAnalysis(data);
     }
 }
@@ -99,7 +99,7 @@ function getHeuristicAnalysis(data: FinancialData) {
     };
 }
 
-export async function getAIChatResponse(message: string, data: FinancialData) {
+export async function getAIChatResponse(message: string, data: FinancialData, history: { role: string, content: string }[] = []) {
     if (!process.env.GEMINI_API_KEY) {
         return "AI Chat is currently in fallback mode. Please provide a GEMINI_API_KEY in .env.local for full intelligence.";
     }
@@ -109,16 +109,42 @@ export async function getAIChatResponse(message: string, data: FinancialData) {
     const currency = data.currency || "GBP (£)";
     const symbol = CURRENCY_SYMBOLS[currency] || "£";
 
+    // Format history for Gemini
+    const chatHistory = history.map(h => ({
+        role: h.role === 'user' ? 'user' : 'model',
+        parts: [{ text: h.content }]
+    }));
+
+    const systemContext = `
+    You are the Laxance Financial AI, an elite wealth architect and advisor.
+    You have absolute visibility into the following real-time financial metrics for the user:
+    - Current Monthly Income: ${symbol}${data.income}
+    - Current Monthly Expenses: ${symbol}${data.expenses}
+    - Recent Transaction History: ${JSON.stringify(data.transactions)}
+    - Active Financial Goals: ${JSON.stringify(data.goals)}
+    - System Currency: ${currency}
+    
+    Current Savings Ratio: ${data.income > 0 ? ((data.income - data.expenses) / data.income * 100).toFixed(1) : 0}%
+
+    Voice Guidelines:
+    - Tone: Sophisticated, authoritative, yet encouraging (the 'Laxance' brand).
+    - Be data-driven. When the user asks "How am I doing?", reference their savings ratio and progress toward their specific goals.
+    - If they have no transactions, suggest they start by logging their first income or expense.
+    - If they have large expenses, identify the categories and suggest specific optimizations.
+    - Keep responses concise but high-value.
+    `;
+
     const chat = model.startChat({
         history: [
             {
                 role: "user",
-                parts: [{ text: `You are the Laxance Financial AI. You have access to the user's data: Income ${symbol}${data.income}, Expenses ${symbol}${data.expenses}, Goals: ${JSON.stringify(data.goals)}. Stay helpful, professional, and concise. All values are in ${currency}.` }],
+                parts: [{ text: systemContext }],
             },
             {
                 role: "model",
-                parts: [{ text: "Understood. I am ready to assist with premium financial advice based on the user's specific data." }],
+                parts: [{ text: "Understood. I am your Laxance Financial AI advisor. I have analyzed your transactions, income, and goals. How can I assist you with your wealth strategy today?" }],
             },
+            ...chatHistory
         ],
     });
 
@@ -126,10 +152,13 @@ export async function getAIChatResponse(message: string, data: FinancialData) {
         const result = await chat.sendMessage(message);
         return result.response.text();
     } catch (error: any) {
-        console.error("Gemini Chat Error:", error);
+        console.error("Gemini Chat Error:", error?.message || error);
         if (error.message?.includes("404") || error.message?.includes("not found")) {
-            return "The AI model is currently experiencing connectivity issues in your region. Falling back to local heuristics...";
+            return "The AI model is currently experiencing connectivity issues. Please try again in a moment.";
         }
-        throw error;
+        if (error.message?.includes("429") || error.message?.includes("quota") || error.message?.includes("Too Many Requests")) {
+            return "You've reached the AI rate limit. Please wait about a minute and try again. Your financial data is safe and ready.";
+        }
+        return "I encountered an issue processing your request. Please try again shortly.";
     }
 }

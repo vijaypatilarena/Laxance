@@ -20,7 +20,8 @@ export default function ChatPage() {
     if (!input.trim() || isTyping) return;
 
     const userMessage = { role: 'user', content: input };
-    setMessages(prev => [...prev, userMessage]);
+    const currentMessages = [...messages, userMessage];
+    setMessages(currentMessages);
     setInput("");
     setIsTyping(true);
 
@@ -28,7 +29,10 @@ export default function ChatPage() {
       const res = await fetch('/api/ai/chat', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ message: input })
+        body: JSON.stringify({ 
+          message: input,
+          history: messages.slice(1).map(m => ({ role: m.role, content: m.content })) 
+        })
       });
       
       if (!res.ok) {
@@ -46,16 +50,28 @@ export default function ChatPage() {
     }
   };
 
+  const clearChat = () => {
+    setMessages([{ role: 'assistant', content: 'Hello! I am your Laxance Financial Assistant. How can I help you optimize your wealth today?' }]);
+  };
+
   return (
     <div className="chat-container">
-      <header style={{ marginBottom: '2rem', display: 'flex', alignItems: 'center', gap: '1rem' }}>
-        <div style={{ background: '#000', color: '#fff', padding: '0.5rem', borderRadius: '8px' }}>
-          <Sparkles size={20} />
+      <header style={{ marginBottom: '2rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+          <div style={{ background: '#000', color: '#fff', padding: '0.5rem', borderRadius: '8px' }}>
+            <Sparkles size={20} />
+          </div>
+          <div>
+            <h1 style={{ fontSize: '1.5rem', fontWeight: 800 }}>Financial AI Chat</h1>
+            <p style={{ fontSize: '0.9rem', color: '#666' }}>Always active, always intelligent.</p>
+          </div>
         </div>
-        <div>
-          <h1 style={{ fontSize: '1.5rem', fontWeight: 800 }}>Financial AI Chat</h1>
-          <p style={{ fontSize: '0.9rem', color: '#666' }}>Always active, always intelligent.</p>
-        </div>
+        <button 
+          onClick={clearChat}
+          style={{ fontSize: '0.8rem', padding: '0.5rem 1rem', borderRadius: '8px', border: '1px solid #eee', background: '#fff', cursor: 'pointer' }}
+        >
+          Clear History
+        </button>
       </header>
 
       <div style={{ 

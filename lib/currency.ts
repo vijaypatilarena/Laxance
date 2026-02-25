@@ -44,7 +44,14 @@ export async function fetchLatestRates() {
     if (now - lastFetchTime < CACHE_DURATION) return CURRENCY_RATES;
 
     try {
-        const res = await fetch('https://open.er-api.com/v6/latest/GBP');
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 5000); // 5s timeout
+
+        const res = await fetch('https://open.er-api.com/v6/latest/GBP', {
+            signal: controller.signal
+        });
+        clearTimeout(timeoutId);
+
         const data = await res.json();
 
         if (data && data.rates) {
@@ -62,7 +69,7 @@ export async function fetchLatestRates() {
             lastFetchTime = now;
         }
     } catch (err) {
-        console.error("Failed to fetch exchange rates:", err);
+        console.error("Failed to fetch exchange rates (using defaults):", err);
     }
     return CURRENCY_RATES;
 }

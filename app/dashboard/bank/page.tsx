@@ -45,7 +45,7 @@ export default function BankPage() {
   // Fetch connected banks
   const fetchStatus = useCallback(async () => {
     try {
-      const res = await fetch('/api/plaid/status');
+      const res = await fetch('/api/banking-provider/status');
       const data = await res.json();
       setConnectedBanks(data.banks || []);
     } catch (err) {
@@ -63,7 +63,7 @@ export default function BankPage() {
     setMessage(null);
     try {
       // 1. Get a link token from our server
-      const tokenRes = await fetch('/api/plaid/create-link-token', { method: 'POST' });
+      const tokenRes = await fetch('/api/banking-provider/create-link-token', { method: 'POST' });
       const tokenData = await tokenRes.json();
 
       if (!tokenData.link_token) {
@@ -79,7 +79,7 @@ export default function BankPage() {
           onSuccess: async (publicToken: string, metadata: any) => {
             // 3. Exchange the public token
             try {
-              const exchangeRes = await fetch('/api/plaid/exchange-token', {
+              const exchangeRes = await fetch('/api/banking-provider/exchange-token', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
@@ -120,7 +120,7 @@ export default function BankPage() {
   const handleSync = async () => {
     setIsSyncing(true);
     try {
-      const res = await fetch('/api/plaid/transactions');
+      const res = await fetch('/api/banking-provider/transactions');
       const data = await res.json();
       setPlaidTransactions(data.transactions || []);
       setMessage({ type: 'success', text: `Synced ${data.transactions?.length || 0} transactions from your banks.` });
@@ -135,7 +135,7 @@ export default function BankPage() {
   const handleDisconnect = async (institutionName: string) => {
     if (!confirm(`Are you sure you want to disconnect ${institutionName}? This will stop transaction syncing.`)) return;
     try {
-      await fetch('/api/plaid/status', {
+      await fetch('/api/banking-provider/status', {
         method: 'DELETE',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ institution_name: institutionName }),

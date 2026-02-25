@@ -32,7 +32,7 @@ export default function DashboardOverview() {
 
   // Fetch real stats from Supabase via API
   useEffect(() => {
-    fetch('/api/stats')
+    fetch('/api/agg-metrics')
       .then(res => res.json())
       .then(data => {
         if (data && !data.error) {
@@ -42,10 +42,16 @@ export default function DashboardOverview() {
       })
       .catch(console.error);
 
-    fetch('/api/ai/analyze')
-      .then(res => res.json())
+    fetch('/api/intelligence-data')
+      .then(res => {
+        if (!res.ok) throw new Error(`Analysis failed with status ${res.status}`);
+        return res.json();
+      })
       .then(data => setAnalysis(data))
-      .catch(console.error)
+      .catch(err => {
+        console.error("AI Analysis Fetch Error:", err);
+        setAnalysis(null);
+      })
       .finally(() => setLoadingAnalysis(false));
   }, []);
 

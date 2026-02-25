@@ -28,7 +28,7 @@ export default function TransactionsPage() {
 
   // Load transactions from Supabase on mount
   useEffect(() => {
-    fetch('/api/transactions')
+    fetch('/api/ledger-data')
       .then(res => res.json())
       .then(data => {
         if (Array.isArray(data)) setTransactions(data);
@@ -41,7 +41,7 @@ export default function TransactionsPage() {
     if (!confirm('Are you sure you want to delete this transaction?')) return;
     
     try {
-      const res = await fetch(`/api/transactions?id=${id}`, {
+      const res = await fetch(`/api/ledger-data?id=${id}`, {
         method: 'DELETE'
       });
       if (res.ok) {
@@ -58,7 +58,7 @@ export default function TransactionsPage() {
     
     setSaving(true);
     try {
-      const res = await fetch('/api/transactions', {
+      const res = await fetch('/api/ledger-data', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({

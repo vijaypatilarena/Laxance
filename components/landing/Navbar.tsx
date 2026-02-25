@@ -32,8 +32,8 @@ export default function Navbar() {
         justifyContent: 'space-between',
         alignItems: 'center'
       }}>
-        <Link href="/" style={{ fontSize: '1.2rem', fontWeight: 900, letterSpacing: '-0.05em', color: '#000' }}>
-          LAXANCE
+        <Link href="/" style={{ display: 'flex', alignItems: 'center' }}>
+          <img src="/laxance-logo.png" alt="Laxance" style={{ height: '48px', width: 'auto', objectFit: 'contain' }} />
         </Link>
         
         {/* Desktop Links */}

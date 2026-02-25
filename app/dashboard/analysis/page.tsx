@@ -11,7 +11,7 @@ export default function AnalysisPage() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    fetch('/api/ai/analyze')
+    fetch('/api/intelligence-data')
       .then(res => res.json())
       .then(data => setAnalysis(data))
       .catch(console.error)

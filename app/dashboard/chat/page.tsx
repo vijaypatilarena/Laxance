@@ -26,7 +26,7 @@ export default function ChatPage() {
     setIsTyping(true);
 
     try {
-      const res = await fetch('/api/ai/chat', {
+      const res = await fetch('/api/financial-assistant', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ 
@@ -36,15 +36,15 @@ export default function ChatPage() {
       });
       
       if (!res.ok) {
-        throw new Error('Server responded with an error');
+        throw new Error(`Server responded with status ${res.status}`);
       }
 
       const data = await res.json();
       
       setMessages(prev => [...prev, { role: 'assistant', content: data.response }]);
     } catch (err) {
-      console.error('Chat error:', err);
-      setMessages(prev => [...prev, { role: 'assistant', content: "I'm sorry, I'm having trouble connecting to my neural core. Please try again later." }]);
+      console.error('Laxance Assistant Error:', err);
+      setMessages(prev => [...prev, { role: 'assistant', content: "I encountered a synchronization error with my neural frequency. Please try asking again in a moment." }]);
     } finally {
       setIsTyping(false);
     }

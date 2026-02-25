@@ -56,7 +56,7 @@ export default function GoalsPage() {
 
   const fetchGoals = async () => {
     try {
-      const res = await fetch('/api/goals');
+      const res = await fetch('/api/target-records');
       const data = await res.json();
       if (Array.isArray(data)) {
         setGoals(data);
@@ -119,7 +119,7 @@ export default function GoalsPage() {
   const calculateRoadmapAndSave = async () => {
     // Save to Supabase
     try {
-      const res = await fetch('/api/goals', {
+      const res = await fetch('/api/target-records', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -154,7 +154,7 @@ export default function GoalsPage() {
     if (!confirm('Are you sure you want to delete this goal?')) return;
 
     try {
-      const res = await fetch(`/api/goals?id=${id}`, { method: 'DELETE' });
+      const res = await fetch(`/api/target-records?id=${id}`, { method: 'DELETE' });
       if (res.ok) {
         if (currentGoal?.id === id) {
           setCurrentGoal(null);

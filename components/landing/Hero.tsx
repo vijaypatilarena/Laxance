@@ -1,7 +1,13 @@
 "use client";
 
 import { motion, useScroll, useTransform } from "framer-motion";
-import { useRef } from "react";
+import { useRef, useState, useEffect } from "react";
+import { Download, Smartphone } from "lucide-react";
+
+interface BeforeInstallPromptEvent extends Event {
+  prompt(): Promise<void>;
+  userChoice: Promise<{ outcome: "accepted" | "dismissed" }>;
+}
 
 export default function Hero() {
   const containerRef = useRef(null);
@@ -12,6 +18,31 @@ export default function Hero() {
 
   const y = useTransform(scrollYProgress, [0, 1], ["0%", "30%"]);
   const opacity = useTransform(scrollYProgress, [0, 0.5], [1, 0]);
+
+  const [installPrompt, setInstallPrompt] = useState<BeforeInstallPromptEvent | null>(null);
+  const [isInstalled, setIsInstalled] = useState(false);
+
+  useEffect(() => {
+    if (window.matchMedia("(display-mode: standalone)").matches) {
+      setIsInstalled(true);
+      return;
+    }
+
+    const handler = (e: Event) => {
+      e.preventDefault();
+      setInstallPrompt(e as BeforeInstallPromptEvent);
+    };
+    window.addEventListener("beforeinstallprompt", handler);
+    return () => window.removeEventListener("beforeinstallprompt", handler);
+  }, []);
+
+  const handleInstall = async () => {
+    if (!installPrompt) return;
+    installPrompt.prompt();
+    const { outcome } = await installPrompt.userChoice;
+    if (outcome === "accepted") setIsInstalled(true);
+    setInstallPrompt(null);
+  };
 
   return (
     <section 
@@ -171,14 +202,57 @@ export default function Hero() {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 1, delay: 0.6 }}
-          style={{ display: 'flex', gap: '1rem', justifyContent: 'center' }}
+          style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '1.2rem' }}
         >
-          <button className="btn btn-primary" style={{ padding: '1.4rem 3.5rem', fontSize: '1rem', borderRadius: '100px', letterSpacing: '0.05em', boxShadow: '0 20px 40px rgba(0,0,0,0.1)' }}>
-            GET STARTED
-          </button>
-          <button className="btn btn-secondary" style={{ padding: '1.4rem 3.5rem', fontSize: '1rem', borderRadius: '100px', letterSpacing: '0.05em', border: '1px solid #ddd', background: 'transparent' }}>
-            LEARN MORE
-          </button>
+          <div style={{ display: 'flex', gap: '1rem', justifyContent: 'center', flexWrap: 'wrap' }}>
+            <button className="btn btn-primary" style={{ padding: '1.4rem 3.5rem', fontSize: '1rem', borderRadius: '100px', letterSpacing: '0.05em', boxShadow: '0 20px 40px rgba(0,0,0,0.1)' }}>
+              GET STARTED
+            </button>
+            <button className="btn btn-secondary" style={{ padding: '1.4rem 3.5rem', fontSize: '1rem', borderRadius: '100px', letterSpacing: '0.05em', border: '1px solid #ddd', background: 'transparent' }}>
+              LEARN MORE
+            </button>
+          </div>
+
+          {/* Install App Button */}
+          {!isInstalled && (
+            <motion.button
+              onClick={handleInstall}
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.8, delay: 1 }}
+              whileHover={{ scale: 1.03 }}
+              whileTap={{ scale: 0.97 }}
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: '0.6rem',
+                padding: '0.8rem 1.8rem',
+                borderRadius: '100px',
+                background: 'rgba(0,0,0,0.05)',
+                color: '#333',
+                fontWeight: 600,
+                fontSize: '0.85rem',
+                border: '1px solid rgba(0,0,0,0.08)',
+                cursor: 'pointer',
+                letterSpacing: '0.02em',
+                transition: 'all 0.2s ease',
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.background = '#000';
+                e.currentTarget.style.color = '#fff';
+                e.currentTarget.style.borderColor = '#000';
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.background = 'rgba(0,0,0,0.05)';
+                e.currentTarget.style.color = '#333';
+                e.currentTarget.style.borderColor = 'rgba(0,0,0,0.08)';
+              }}
+            >
+              <Smartphone size={16} />
+              Install App
+              <Download size={14} style={{ opacity: 0.6 }} />
+            </motion.button>
+          )}
         </motion.div>
       </motion.div>
       

@@ -4,6 +4,8 @@ import { NextRequest, NextResponse } from 'next/server';
 import { auth } from '@clerk/nextjs/server';
 import { supabase } from '@/lib/supabase';
 
+export const dynamic = 'force-dynamic';
+
 // GET /api/transactions — fetch all transactions for the logged-in user
 export async function GET() {
     const { userId } = await auth();

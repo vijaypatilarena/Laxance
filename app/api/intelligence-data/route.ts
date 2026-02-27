@@ -1,8 +1,10 @@
-import { NextResponse } from 'next/server';
+import { NextRequest, NextResponse } from 'next/server';
 import { auth, clerkClient } from '@clerk/nextjs/server';
 import { supabase } from '@/lib/supabase';
 import { getAIAnalysis } from '@/lib/ai';
 import { convertValue, fetchLatestRates } from '@/lib/currency';
+
+export const dynamic = 'force-dynamic';
 
 export async function GET() {
     console.log("[API] Starting Data Insights API (Public/Diagnostics Mode)...");

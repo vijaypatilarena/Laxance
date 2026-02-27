@@ -4,6 +4,8 @@ import { NextResponse } from 'next/server';
 import { auth } from '@clerk/nextjs/server';
 import { supabase } from '@/lib/supabase';
 
+export const dynamic = 'force-dynamic';
+
 // GET /api/stats — compute financial stats from the transactions table
 export async function GET() {
     const { userId } = await auth();

@@ -4,6 +4,8 @@ import { NextRequest, NextResponse } from 'next/server';
 import { auth, clerkClient } from '@clerk/nextjs/server';
 import { supabase } from '@/lib/supabase';
 
+export const dynamic = 'force-dynamic';
+
 // GET /api/goals — fetch all goals for the logged-in user
 export async function GET() {
     const { userId } = await auth();

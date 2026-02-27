@@ -6,6 +6,8 @@ import { plaidClient } from '@/lib/plaid';
 import { supabase } from '@/lib/supabase';
 import { decrypt } from '@/lib/encryption';
 
+export const dynamic = 'force-dynamic';
+
 // GET /api/plaid/transactions
 // Fetches transactions from all connected bank accounts for the authenticated user.
 // Decrypts the access token on-the-fly, uses it, and never exposes it.

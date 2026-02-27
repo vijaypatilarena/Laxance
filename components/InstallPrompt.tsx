@@ -96,7 +96,7 @@ export default function InstallPrompt() {
         }}
       >
         <img
-          src="/icon-192x192.png"
+          src="/app-icon.png"
           alt="Laxance"
           style={{ width: "100%", height: "100%", objectFit: "cover" }}
         />

@@ -84,7 +84,7 @@ export default function DashboardLayout({
       {/* Mobile Header */}
       <div className="mobile-header">
         <div className="mobile-header-brand" style={{ display: 'flex', alignItems: 'center' }}>
-          <img src="/laxance-logo.png" alt="Laxance" style={{ height: '42px', width: 'auto', objectFit: 'contain' }} />
+          <img src="/app-icon.png" alt="Laxance" style={{ height: '42px', width: 'auto', objectFit: 'contain' }} />
         </div>
         <button onClick={() => setIsSidebarOpen(!isSidebarOpen)}>
           {isSidebarOpen ? <X size={24} /> : <Menu size={24} />}
@@ -102,7 +102,7 @@ export default function DashboardLayout({
       {/* Sidebar */}
       <aside className={sidebarClassName}>
         <div className="sidebar-brand" style={{ display: 'flex', alignItems: 'center' }}>
-          <img src="/laxance-logo.png" alt="Laxance" style={{ height: '42px', width: 'auto', objectFit: 'contain' }} />
+          <img src="/app-icon.png" alt="Laxance" style={{ height: '42px', width: 'auto', objectFit: 'contain' }} />
         </div>
         
         <nav className="sidebar-nav">

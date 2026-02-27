@@ -14,19 +14,13 @@ export default function manifest(): MetadataRoute.Manifest {
         categories: ['finance', 'productivity', 'business'],
         icons: [
             {
-                src: '/icon-192x192.png',
-                sizes: '192x192',
+                src: '/app-icon.png',
+                sizes: 'any',
                 type: 'image/png',
                 purpose: 'any',
             },
             {
-                src: '/icon-512x512.png',
-                sizes: '512x512',
-                type: 'image/png',
-                purpose: 'any',
-            },
-            {
-                src: '/icon-512x512.png',
+                src: '/app-icon.png',
                 sizes: '512x512',
                 type: 'image/png',
                 purpose: 'maskable',
@@ -37,19 +31,19 @@ export default function manifest(): MetadataRoute.Manifest {
                 name: 'Dashboard',
                 short_name: 'Dashboard',
                 url: '/dashboard',
-                icons: [{ src: '/icon-192x192.png', sizes: '192x192' }],
+                icons: [{ src: '/app-icon.png', sizes: '192x192' }],
             },
             {
                 name: 'Transactions',
                 short_name: 'Transactions',
                 url: '/dashboard/transactions',
-                icons: [{ src: '/icon-192x192.png', sizes: '192x192' }],
+                icons: [{ src: '/app-icon.png', sizes: '192x192' }],
             },
             {
                 name: 'AI Chat',
                 short_name: 'Chat',
                 url: '/dashboard/chat',
-                icons: [{ src: '/icon-192x192.png', sizes: '192x192' }],
+                icons: [{ src: '/app-icon.png', sizes: '192x192' }],
             },
         ],
     }

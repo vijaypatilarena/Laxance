@@ -11,7 +11,7 @@ export const metadata: Metadata = {
     statusBarStyle: "black-translucent",
     title: "Laxance",
     startupImage: [
-      "/icon-512x512.png",
+      "/app-icon.png",
     ],
   },
   formatDetection: {
@@ -23,7 +23,7 @@ export const metadata: Metadata = {
     "application-name": "Laxance",
     "apple-mobile-web-app-title": "Laxance",
     "msapplication-TileColor": "#000000",
-    "msapplication-TileImage": "/icon-192x192.png",
+    "msapplication-TileImage": "/app-icon.png",
   },
 };
 
@@ -46,8 +46,8 @@ export default function RootLayout({
     <ClerkProvider publishableKey={clerkPubKey}>
       <html lang="en">
         <head>
-          <link rel="icon" href="/icon-192x192.png" type="image/png" />
-          <link rel="apple-touch-icon" href="/icon-192x192.png" />
+          <link rel="icon" href="/app-icon.png" type="image/png" />
+          <link rel="apple-touch-icon" href="/app-icon.png" />
         </head>
         <body>
           {children}

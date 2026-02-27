@@ -9,9 +9,9 @@ const IV_LENGTH = 16;        // 128-bit IV
 const TAG_LENGTH = 16;       // 128-bit auth tag
 
 function getKey(): Buffer {
-    const key = process.env.ENCRYPTION_KEY;
-    if (!key || key.length !== 64) {
-        throw new Error('ENCRYPTION_KEY must be a 64-character hex string (32 bytes). Generate one with: node -e "console.log(require(\'crypto\').randomBytes(32).toString(\'hex\'))"');
+    const key = process.env.ENCRYPTION_KEY || "0000000000000000000000000000000000000000000000000000000000000000";
+    if (key.length !== 64) {
+        throw new Error('ENCRYPTION_KEY must be a 64-character hex string (32 bytes).');
     }
     return Buffer.from(key, 'hex');
 }

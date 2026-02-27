@@ -5,7 +5,7 @@ export default function manifest(): MetadataRoute.Manifest {
         name: 'Laxance — Intelligent Finance',
         short_name: 'Laxance',
         description: 'AI-powered daily expenses, income analysis, and goal-oriented wealth building.',
-        start_url: '/dashboard',
+        start_url: '/',
         scope: '/',
         display: 'standalone',
         orientation: 'portrait',
